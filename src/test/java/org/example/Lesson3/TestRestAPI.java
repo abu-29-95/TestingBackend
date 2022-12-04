@@ -3,7 +3,6 @@ package org.example.Lesson3;
 import io.restassured.http.ContentType;
 
 import io.restassured.http.Method;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -12,6 +11,43 @@ import static org.hamcrest.Matchers.*;
 
 
 public class TestRestAPI extends AbstractTest {
+
+    @Test
+    void postAddMealPlan() {
+
+       String id = given()
+                .queryParam("apiKey", getApiKey())
+                .queryParam("hash", "9ae4348d3db28d0134411c0ed8a245077ac06a02")
+                .body("{\n" +
+                        "    \"date\": 1589500800,\n" +
+                        "    \"slot\": 1,\n" +
+                        "    \"position\": 0,\n" +
+                        "    \"type\": \"RECIPE\",\n" +
+                        "    \"value\": {\n" +
+                        "        \"id\": 296213,\n" +
+                        "        \"servings\": 2,\n" +
+                        "        \"title\": \"Spinach Salad with Roasted Vegetables and Spiced Chickpea\",\n" +
+                        "        \"imageType\": \"jpg\",\n" +
+                        "    }\n" +
+                        "}")
+                .when()
+                .post("https://api.spoonacular.com/mealplanner/abylkhaiyr/items")
+                .then()
+                .statusCode(200)
+                .header("Connection", "keep-alive")
+                .contentType(ContentType.JSON)
+                .extract()
+                .jsonPath()
+                .get("id")
+                .toString();
+
+        given()
+                .queryParam("hash", "9ae4348d3db28d0134411c0ed8a245077ac06a02")
+                .queryParam("apiKey",getApiKey())
+                .delete("https://api.spoonacular.com/mealplanner/abylkhaiyr/items/"+id)
+                .then()
+                .statusCode(200);
+    }
 
 
     @Test
